@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>circleAnime</title>
+	<style type="text/css">
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+
+		}
+
+		canvas {
+			display: block;
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+
+<body>
+	<canvas id="myCanvas"></canvas>
+	<script>
+		const canvas = document.getElementById('myCanvas');
+		const ctx = canvas.getContext('2d');//2d描画可能
+
+		let WIDTH = window.innerWidth;  //画面の幅
+		let HEIGHT = window.innerHeight; //画面の高さ
+
+		canvas.setAttribute("width", WIDTH);
+		canvas.setAttribute("height", HEIGHT);
+
+		//canvas.style.border = "1px solid #999";
+
+		const NUM = 100;    //パーティクルの数
+
+		//パーティクルのパラメータの配列
+		let speedX = new Array(NUM);
+		let speedY = new Array(NUM);
+		let locX = new Array(NUM);
+		let locY = new Array(NUM);
+		let radius = new Array(NUM);
+		let r = new Array(NUM);
+		let g = new Array(NUM);
+		let b = new Array(NUM);
+		let radiusSize = 50;
+
+		for (let i = 0; i < NUM; i++) {
+			//初期値をランダムに設定
+			speedX[i] = Math.random() * 24.0 - 12.0;
+			speedY[i] = Math.random() * 24.0 - 12.0;
+			radius[i] = Math.random() * radiusSize + 1.0;
+			locX[i] = WIDTH / 2;
+			locY[i] = HEIGHT / 2;
+			r[i] = Math.floor(Math.random() * 255);
+			g[i] = Math.floor(Math.random() * 255);
+			b[i] = Math.floor(Math.random() * 255);
+		}
+
+		//インターバル設定
+		setInterval(draw, 30);
+
+		window.addEventListener('resize',function (e) {
+			WIDTH = window.innerWidth;  //画面の幅
+			HEIGHT =window.innerHeight; //画面の高さ
+			canvas.setAttribute("width", WIDTH);
+			canvas.setAttribute("height", HEIGHT);
+			mouseX = WIDTH / 2;
+			mouseY = HEIGHT / 2;
+			mDown();
+		});
+
+
+		function draw() {
+			//画面をクリア
+			ctx.clearRect(0, 0, WIDTH, HEIGHT);
+			ctx.globalAlpha = 0.6;
+			//パーティクルの数だけくりかえし
+			for (let i = 0; i < NUM; i++) {
+				//位置を更新
+				locX[i] += speedX[i];
+				locY[i] += speedY[i];
+				//壁ではねかえる
+				if (locX[i] < 0 || locX[i] > WIDTH) {
+					speedX[i] *= -1.0;
+				}
+				if (locY[i] < 0 || locY[i] > HEIGHT) {
+					speedY[i] *= -1.0;
+				}
+				//更新した座標で円を描く
+				ctx.beginPath();
+				ctx.fillStyle = 'rgb(' + r[i] + ',' + g[i] + ',' + b[i] + ')';
+				ctx.arc(locX[i], locY[i], radius[i], 0, Math.PI * 2.0, true);
+				ctx.fill();
+			}
+		};
+
+
+
+		canvas.addEventListener("mousedown", function (e) {
+			e.preventDefault();
+			// mouseX = (isTouch ? event.changedTouches[0].pageX : e.pageX);
+			// mouseY = (isTouch ? event.changedTouches[0].pageY : e.pageY);
+			mouseX = e.pageX;
+			mouseY = e.pageY;
+			mDown();
+		});
+
+
+		function mDown() {
+			//e.preventDefault();// ページが動いたり、反応を止める
+			for (let i = 0; i < NUM; i++) {
+				locX[i] = mouseX;
+				locY[i] = mouseY;
+				speedX[i] = Math.random() * 24.0 - 12.0;
+				speedY[i] = Math.random() * 24.0 - 12.0;
+				radius[i] = Math.random() * radiusSize + 1.0;
+				r[i] = Math.floor(Math.random() * 255);
+				g[i] = Math.floor(Math.random() * 255);
+				b[i] = Math.floor(Math.random() * 255);
+			}
+		}
+
+	</script>
+</body>
+
+</html>
